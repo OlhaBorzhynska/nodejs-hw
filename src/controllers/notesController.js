@@ -10,7 +10,7 @@ export async function getNoteById(req, res) {
   const { noteId } = req.params;
   const note = await Note.findById(noteId);
   if (!note) {
-    throw createHttpError(404, 'Student not found');
+    throw createHttpError(404, 'Note not found');
   }
   res.status(200).json(note);
 }
@@ -27,7 +27,7 @@ export async function deleteNote(req, res) {
   });
 
   if (!note) {
-    throw createHttpError(404, 'Student not found');
+    throw createHttpError(404, 'Note not found');
   }
   res.status(200).json(note);
 }
@@ -39,7 +39,7 @@ export async function updateNote(req, res) {
   });
 
   if (!note) {
-    throw createHttpError(404, 'Student not found');
+    throw createHttpError(404, 'Note not found');
   }
   res.status(200).json(note);
 }

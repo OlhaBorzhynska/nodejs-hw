@@ -13,7 +13,7 @@ router.get('/notes', getAllNotes);
 
 router.get('/notes/:noteId', getNoteById);
 
-router.post('/notes/', createNote);
+router.post('/notes', createNote);
 
 router.delete('/notes/:noteId', deleteNote);
 
