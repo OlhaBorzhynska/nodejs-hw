@@ -8,9 +8,7 @@ export async function getAllNotes(req, res) {
 
 export async function getNoteById(req, res) {
   const { noteId } = req.params;
-  const note = await Note.findOne({
-    _id: noteId,
-  });
+  const note = await Note.findById(noteId);
   if (!note) {
     throw createHttpError(404, 'Student not found');
   }
