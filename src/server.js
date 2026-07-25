@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.json' with { type: 'json' };
 
 import { connectMongoDB } from './db/connectMongoDB.js';
 import { logger } from './middleware/logger.js';
@@ -27,6 +29,7 @@ app.use(logger);
 app.use(helmet());
 app.use(express.json());
 
+app.use('/notes-api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(authRoutes);
 app.use(notesRoutes);
 app.use(userRoutes);
