@@ -5,18 +5,12 @@ export const upload = multer({
   limits: {
     fileSize: 2 * 1024 * 1024,
   },
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = [
-      'image/jpeg',
-      'image/jpg',
-      'image/png',
-      'image/gif',
-      'image/webp',
-    ];
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only images allowed'), false);
+  fileFilter(req, file, callback) {
+    if (!file.mimetype || !file.mimetype.startsWith('image/')) {
+      callback(new Error('Only images allowed'));
+      return;
     }
+
+    callback(null, true);
   },
 });
