@@ -30,7 +30,7 @@
 
 ## 📖 Документація API
 
-Повна документація API доступна через [Swagger UI](https://nodejs-hw-4-ql29.onrender.com/notes-api-docs).
+Повна документація API доступна через [Swagger UI](https://nodejs-hw-5-5zfu.onrender.com/notes-api-docs).
 
 ## 🔐 Автентифікація
 
@@ -42,7 +42,7 @@
 ## ⚙️ Встановлення та запуск
 
 ```bash
-git clone ...
+git clone https://github.com/OlhaBorzhynska/nodejs-hw.git
 ```
 
 ```bash
