@@ -6,8 +6,8 @@ const doc = {
     description:
       'Notes API is a RESTful backend application built with Node.js, Express, and MongoDB. It provides secure user authentication and allows authenticated users to create, update, search, and manage personal notes.',
   },
-  host: 'http://localhost:3000/',
-  // host: 'https://nodejs-hw-4-ql29.onrender.com',
+  // host: 'http://localhost:3000/',
+  host: 'https://nodejs-hw-5-5zfu.onrender.com',
 };
 
 const outputFile = './swagger.json';
