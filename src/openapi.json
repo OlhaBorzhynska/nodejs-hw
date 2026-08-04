@@ -1,0 +1,960 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Notes API",
+    "version": "1.0.0",
+    "description": "RESTful API for managing personal notes. The API provides cookie-based authentication, password reset, avatar upload, and full CRUD operations for personal notes.",
+    "contact": {
+      "name": "Olha Borzhynska",
+      "url": "https://github.com/OlhaBorzhynska"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://nodejs-hw-5-5zfu.onrender.com",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User authentication and session management."
+    },
+    {
+      "name": "Notes",
+      "description": "Operations related to user notes."
+    },
+    {
+      "name": "Users",
+      "description": "Operations related to user profile."
+    }
+  ],
+  "security": [
+    {
+      "sessionId": [],
+      "accessToken": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "sessionId": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sessionId"
+      },
+      "accessToken": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "accessToken"
+      },
+      "refreshToken": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "refreshToken"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "688fa3dc64b86817dbcd4baf"
+          },
+          "username": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "avatar": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://res.cloudinary.com/demo/image/upload/avatar.jpg"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Note": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "688fa42b64b86817dbcd4bc2"
+          },
+          "title": {
+            "type": "string",
+            "example": "Buy groceries"
+          },
+          "content": {
+            "type": "string",
+            "example": "Milk, Bread, Eggs"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "Work",
+              "Personal",
+              "Meeting",
+              "Shopping",
+              "Ideas",
+              "Travel",
+              "Finance",
+              "Health",
+              "Important",
+              "Todo"
+            ],
+            "example": "Shopping"
+          },
+          "userId": {
+            "type": "string",
+            "example": "688fa3dc64b86817dbcd4baf"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "Password123"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Password123"
+          }
+        }
+      },
+      "RequestResetEmailRequest": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          }
+        }
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "required": ["token", "password"],
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "NewPassword123"
+          }
+        }
+      },
+      "CreateNoteRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Buy groceries"
+          },
+          "content": {
+            "type": "string",
+            "example": "Milk, Bread, Eggs"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "Work",
+              "Personal",
+              "Meeting",
+              "Shopping",
+              "Ideas",
+              "Travel",
+              "Finance",
+              "Health",
+              "Important",
+              "Todo"
+            ],
+            "example": "Shopping"
+          }
+        }
+      },
+      "UpdateNoteRequest": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Updated title"
+          },
+          "content": {
+            "type": "string",
+            "example": "Updated content"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "Work",
+              "Personal",
+              "Meeting",
+              "Shopping",
+              "Ideas",
+              "Travel",
+              "Finance",
+              "Health",
+              "Important",
+              "Todo"
+            ]
+          }
+        }
+      },
+      "NotesListResponse": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "perPage": {
+            "type": "integer",
+            "example": 10
+          },
+          "totalNotes": {
+            "type": "integer",
+            "example": 42
+          },
+          "totalPages": {
+            "type": "integer",
+            "example": 5
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Note"
+            }
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Password reset successfully."
+          }
+        }
+      },
+      "AvatarResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://res.cloudinary.com/demo/image/upload/avatar.jpg"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "Page number.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "perPage": {
+        "name": "perPage",
+        "in": "query",
+        "description": "Number of notes per page.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 20,
+          "default": 10
+        }
+      },
+      "tag": {
+        "name": "tag",
+        "in": "query",
+        "description": "Filter notes by tag.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "Work",
+            "Personal",
+            "Meeting",
+            "Shopping",
+            "Ideas",
+            "Travel",
+            "Finance",
+            "Health",
+            "Important",
+            "Todo"
+          ]
+        }
+      },
+      "search": {
+        "name": "search",
+        "in": "query",
+        "description": "Search in note title or content.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "noteId": {
+        "name": "noteId",
+        "in": "path",
+        "required": true,
+        "description": "MongoDB ObjectId of the note.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{24}$",
+          "example": "688fa42b64b86817dbcd4bc2"
+        }
+      }
+    },
+
+    "requestBodies": {
+      "RegisterRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RegisterRequest"
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LoginRequest"
+            }
+          }
+        }
+      },
+      "RequestResetEmailRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RequestResetEmailRequest"
+            }
+          }
+        }
+      },
+      "ResetPasswordRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ResetPasswordRequest"
+            }
+          }
+        }
+      },
+      "CreateNoteRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateNoteRequest"
+            }
+          }
+        }
+      },
+      "UpdateNoteRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateNoteRequest"
+            }
+          }
+        }
+      },
+      "AvatarUploadRequest": {
+        "required": true,
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "required": ["avatar"],
+              "properties": {
+                "avatar": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "Image file (max 2 MB)."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "responses": {
+      "BadRequest": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register a new user",
+        "description": "Creates a new user account, starts a new authenticated session and sets secure HttpOnly cookies.",
+        "operationId": "registerUser",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/RegisterRequest"
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+
+    "/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Log in user",
+        "description": "Authenticates a user, creates a new session and stores accessToken, refreshToken and sessionId in secure HttpOnly cookies.",
+        "operationId": "loginUser",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/LoginRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Refresh session",
+        "description": "Refreshes the current authenticated session using refreshToken and sessionId cookies.",
+        "operationId": "refreshUserSession",
+        "responses": {
+          "200": {
+            "description": "Session refreshed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+
+    "/auth/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Log out user",
+        "description": "Deletes the current session and clears authentication cookies.",
+        "operationId": "logoutUser",
+        "responses": {
+          "204": {
+            "description": "Successfully logged out."
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/auth/request-reset-email": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Request password reset email",
+        "description": "Sends a password reset email if the user exists. For security reasons, the same success response is returned even if the email is not registered.",
+        "operationId": "requestResetEmail",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/RequestResetEmailRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset email request processed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "Password reset email sent successfully"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+
+    "/auth/reset-password": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Reset user password",
+        "description": "Resets the user's password using a valid password reset token. All existing user sessions are deleted after a successful password reset.",
+        "operationId": "resetPassword",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ResetPasswordRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Password successfully reset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "Password reset successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/notes": {
+      "get": {
+        "tags": ["Notes"],
+        "summary": "Get all notes",
+        "description": "Returns a paginated list of notes belonging to the authenticated user. Supports pagination, filtering by tag and text search.",
+        "operationId": "getAllNotes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/perPage"
+          },
+          {
+            "$ref": "#/components/parameters/tag"
+          },
+          {
+            "$ref": "#/components/parameters/search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotesListResponse"
+                },
+                "example": {
+                  "page": 1,
+                  "perPage": 10,
+                  "totalNotes": 2,
+                  "totalPages": 1,
+                  "notes": [
+                    {
+                      "_id": "688fa42b64b86817dbcd4bc2",
+                      "title": "Buy groceries",
+                      "content": "Milk, Bread, Eggs",
+                      "tag": "Shopping",
+                      "userId": "688fa3dc64b86817dbcd4baf",
+                      "createdAt": "2026-08-04T10:00:00.000Z",
+                      "updatedAt": "2026-08-04T10:00:00.000Z"
+                    },
+                    {
+                      "_id": "688fa42b64b86817dbcd4bc3",
+                      "title": "Daily meeting",
+                      "content": "Prepare sprint report",
+                      "tag": "Meeting",
+                      "userId": "688fa3dc64b86817dbcd4baf",
+                      "createdAt": "2026-08-04T11:00:00.000Z",
+                      "updatedAt": "2026-08-04T11:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+
+      "post": {
+        "tags": ["Notes"],
+        "summary": "Create a new note",
+        "description": "Creates a new note for the authenticated user.",
+        "operationId": "createNote",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateNoteRequest"
+        },
+        "responses": {
+          "201": {
+            "description": "Note created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                },
+                "example": {
+                  "_id": "688fa42b64b86817dbcd4bc2",
+                  "title": "Buy groceries",
+                  "content": "Milk, Bread, Eggs",
+                  "tag": "Shopping",
+                  "userId": "688fa3dc64b86817dbcd4baf",
+                  "createdAt": "2026-08-04T10:00:00.000Z",
+                  "updatedAt": "2026-08-04T10:00:00.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/notes/{noteId}": {
+      "get": {
+        "tags": ["Notes"],
+        "summary": "Get note by ID",
+        "description": "Returns a single note belonging to the authenticated user.",
+        "operationId": "getNoteById",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/noteId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                },
+                "example": {
+                  "_id": "688fa42b64b86817dbcd4bc2",
+                  "title": "Buy groceries",
+                  "content": "Milk, Bread, Eggs",
+                  "tag": "Shopping",
+                  "userId": "688fa3dc64b86817dbcd4baf",
+                  "createdAt": "2026-08-04T10:00:00.000Z",
+                  "updatedAt": "2026-08-04T10:00:00.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+
+      "patch": {
+        "tags": ["Notes"],
+        "summary": "Update note",
+        "description": "Updates one or more fields of an existing note belonging to the authenticated user.",
+        "operationId": "updateNote",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/noteId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateNoteRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Note updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                },
+                "example": {
+                  "_id": "688fa42b64b86817dbcd4bc2",
+                  "title": "Updated title",
+                  "content": "Updated content",
+                  "tag": "Work",
+                  "userId": "688fa3dc64b86817dbcd4baf",
+                  "createdAt": "2026-08-04T10:00:00.000Z",
+                  "updatedAt": "2026-08-04T10:15:00.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Notes"],
+        "summary": "Delete note",
+        "description": "Deletes a note belonging to the authenticated user and returns the deleted note.",
+        "operationId": "deleteNote",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/noteId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                },
+                "example": {
+                  "_id": "688fa42b64b86817dbcd4bc2",
+                  "title": "Buy groceries",
+                  "content": "Milk, Bread, Eggs",
+                  "tag": "Shopping",
+                  "userId": "688fa3dc64b86817dbcd4baf",
+                  "createdAt": "2026-08-04T10:00:00.000Z",
+                  "updatedAt": "2026-08-04T10:00:00.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/users/me/avatar": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update user avatar",
+        "description": "Uploads a new avatar image to Cloudinary and updates the authenticated user's profile.",
+        "operationId": "updateUserAvatar",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/AvatarUploadRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvatarResponse"
+                },
+                "example": {
+                  "url": "https://res.cloudinary.com/demo/image/upload/v1754300000/avatars/avatar.jpg"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  }
+}
