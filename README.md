@@ -1,20 +1,24 @@
 # 📝 Notes API
 
-**Notes API** це RESTful бекенд-застосунок, розроблений на Node.js, Express та MongoDB. Він забезпечує безпечну автентифікацію користувачів і надає API для створення, редагування, пошуку та видалення особистих нотаток. Документація API реалізована за допомогою Swagger (OpenAPI).
+**Notes API** is a RESTful backend application developed with Node.js, Express, and MongoDB. It provides secure user authentication and an API for creating, editing, searching, and deleting personal notes. API documentation is implemented using Swagger (OpenAPI).
 
-## 🚀 Основні можливості
-- Реєстрація та авторизація користувачів
-- Автентифікація за допомогою JWT (Access та Refresh Token)
-- Хешування паролів за допомогою bcrypt
-- Керування сесіями користувачів
-- CRUD-операції для роботи з нотатками
-- Пошук і пагінація
-- Валідація вхідних даних
-- Централізована обробка помилок
-- Робота з MongoDB через Mongoose
-- Інтерактивна документація API за допомогою Swagger
+---
 
-## 🛠 Використані технології
+## 🚀 Main Features
+- User registration and authentication
+- JWT authentication (Access and Refresh Tokens)
+- Password hashing using bcrypt
+- User session management
+- CRUD operations for working with notes
+- Search and pagination
+- Input data validation
+- Centralized error handling
+- MongoDB integration using Mongoose
+- Interactive API documentation using Swagger
+
+---
+
+## 🛠 Technologies Used
 
 🔹Node.js
 🔹Express.js
@@ -27,19 +31,24 @@
 🔹Cookie-parser
 🔹dotenv
 
+---
 
-## 📖 Документація API
+## 📖 API Documentation
 
-Повна документація API доступна через [Swagger UI](https://nodejs-hw-5-5zfu.onrender.com/notes-api-docs).
+Full API documentation is available through [Swagger UI](https://nodejs-hw-5-5zfu.onrender.com/notes-api-docs).
 
-## 🔐 Автентифікація
+---
 
-- API використовує JWT для автентифікації користувачів.
-- Access Token використовується для доступу до захищених маршрутів.
-- Refresh Token дозволяє отримати новий Access Token без повторного входу в систему.
-- Refresh Token зберігається в HTTP-only Cookie, що підвищує безпеку застосунку.
+## 🔐 Authentication
 
-## ⚙️ Встановлення та запуск
+- The API uses JWT for user authentication.
+- The Access Token is used to access protected routes.
+- The Refresh Token allows obtaining a new Access Token without logging in again.
+- The Refresh Token is stored in an HTTP-only Cookie, which improves application security.
+
+---
+
+## ⚙️ Installation and Running
 
 ```bash
 git clone https://github.com/OlhaBorzhynska/nodejs-hw.git
