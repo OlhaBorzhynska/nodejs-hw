@@ -6,7 +6,7 @@ The project also includes interactive API documentation using Swagger (OpenAPI).
 
 ---
 
-## 🚀 Main Features
+## 🚀 Features
 - User registration and authentication
 - JWT authentication with Access and Refresh Tokens
 - Password hashing using bcrypt
@@ -20,7 +20,7 @@ The project also includes interactive API documentation using Swagger (OpenAPI).
 
 ---
 
-## 🛠 Technologies Used
+## 🛠 Tech Stack
 
 | Technology            | Purpose                           |
 | :-------------------- | :----------------------------     |
